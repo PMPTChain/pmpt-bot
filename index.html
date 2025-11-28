@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><title>Burn-to-Boost $PMPT</title><meta name="viewport" content="width=device-width,initial-scale=1"/><style>body{font-family:monospace;background:#000;color:#a855f7;text-align:center;padding:40px}h1{font-size:3em}.fire{font-size:5em}button{background:#a855f7;color:#fff;border:none;padding:20px 40px;font-size:1.5em;border-radius:16px;cursor:pointer;margin:20px}button:hover{background:#c084fc}.warning{color:#ff0066;font-weight:bold}</style></head><body>
+<div class="fire">🔥</div>
+<h1>BURN-TO-BOOST $PMPT</h1>
+<p>Every 1,000 $PMPT burned = 1× voting power for 24h<br>Top 10 daily burners get “Fire Lord” NFT</p>
+<p class="warning">BURN IS IRREVERSIBLE</p>
+<button onclick="burn()">CONNECT WALLET & BURN</button>
+<div id="status" style="margin-top:30px;font-size:1.5em"></div>
+<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+<script src="https://unpkg.com/@solana/spl-token@0.4.8/lib/index.iife.min.js"></script>
+<script>
+const TOKEN = "REPLACE_WITH_REAL_MINT_AFTER_LAUNCH";
+async function burn(){if(!window.solana||!window.solana.isPhantom)return document.getElementById("status").innerHTML="Install Phantom!";
+try{const c=await window.solana.connect();const n=new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+const t=new solanaWeb3.PublicKey(TOKEN);const a=await splToken.getAssociatedTokenAddress(t,c.publicKey);
+const r=prompt("How many $PMPT to burn? (e.g. 50000)");if(!r)return;
+const tx=new solanaWeb3.Transaction().add(splToken.createBurnInstruction(a,t,c.publicKey,BigInt(r*1e9)));
+tx.feePayer=c.publicKey;tx.recentBlockhash=(await n.getLatestBlockhash()).blockhash;
+const s=await c.signTransaction(tx);const sig=await n.sendRawTransaction(s.serialize());
+await n.confirmTransaction(sig);const boost=(r/1000).toFixed(0);
+document.getElementById("status").innerHTML=`BURNED ${r} $PMPT 🔥<br>You got <b>${boost}× boost</b> for 24h!<br><a href="https://solscan.io/tx/${sig}" target="_blank">View tx</a>`}
+catch(e){document.getElementById("status").innerHTML="Burn failed: "+e.message}}
+</script>
+</body></html>
